@@ -14,7 +14,7 @@
 
 
 new_with_duration(Type, Name, Duration)->
-    case enable() of
+    case emon:enable() of
         true->
             erlcat:log_transaction_with_duration(Type,Name,Duration),
             ok;

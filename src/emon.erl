@@ -29,7 +29,7 @@ event(Type, Name, Status, Data)->
 error(Message, ErrStr) ->
     case enable() of
         true->
-            erlcat:error(Message,ErrStr),
+            erlcat:log_error(Message,ErrStr),
             ok;
         _ ->
             fail
