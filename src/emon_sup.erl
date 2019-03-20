@@ -31,7 +31,8 @@ start_link() ->
 %% Before OTP 18 tuples must be used to specify a child. e.g.
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
-    {ok, { {one_for_all, 0, 1}, []} }.
+    HeartBeat=#{id =>heartbeat,start=>{emon_heartbeat,start_link,[]} },
+    {ok, { {one_for_one, 100, 10}, [HeartBeat]}}.
 
 %%====================================================================
 %% Internal functions

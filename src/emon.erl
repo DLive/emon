@@ -1,17 +1,27 @@
 -module(emon).
 
 -include_lib("erlcat/include/erlcat.hrl").
-
--export([init/1,enable/0]).
-
+-include("emon.hrl").
+-export([init/1,destroy/0,enable/0,hook_heartbeat/3]).
 -export([event/4, error/2, metric_count/2, metric_duration/2, metric_sum/2]).
-
+-export([heartbeat/2]).
 
 
 init(Appkey)->
     case enable() of
         true->
-            erlcat:init_cat(Appkey,#cat_config{enable_debugLog = 1,enable_heartbeat = 1}),
+            Encode = application:get_env(emon,erlcat_encode,0),
+            Debug = application:get_env(emon,erlcat_debug,0),
+            erlcat:init_cat(Appkey,#cat_config{enable_debugLog = Debug,enable_heartbeat = 1,encoder_type = Encode}),
+            ok;
+        _ ->
+            fail
+    end.
+
+destroy()->
+    case enable() of
+        true->
+            erlcat:cat_client_destroy(),
             ok;
         _ ->
             fail
@@ -71,3 +81,15 @@ enable()->
         _ ->
             false
     end.
+
+heartbeat(Category,HeartMap)->
+    case application:get_env(emon,enable,true) of
+        true->
+            erlcat:log_heartbeat(Category,HeartMap),
+            ok;
+        _ ->
+            fail
+    end.
+
+hook_heartbeat(Module,Fun,Arity)->
+    hooks:reg(?HOOK_EVENT_HEARTBEAT,Module,Fun,Arity).
