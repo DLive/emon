@@ -8,4 +8,4 @@
 %%%-------------------------------------------------------------------
 -author("dlive").
 
--define(HOOK_EVENT_HEARTBEAT,emon_heartbeat_event).
+-define(HOOK_EVENT_HEARTBEAT, emon_heartbeat_event).

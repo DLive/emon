@@ -6,7 +6,6 @@
 -export([event/4, error/2, metric_count/2, metric_duration/2, metric_sum/2]).
 -export([heartbeat/2]).
 
-
 init(Appkey)->
     case enable() of
         true->
@@ -27,7 +26,6 @@ destroy()->
             fail
     end.
 
-
 event(Type, Name, Status, Data)->
     case enable() of
         true->
@@ -36,6 +34,7 @@ event(Type, Name, Status, Data)->
         _ ->
             fail
     end.
+
 error(Message, ErrStr) ->
     case enable() of
         true->
@@ -72,8 +71,6 @@ metric_sum(Name, Count)->
             fail
     end.
 
-
-
 enable()->
     case application:get_env(emon,enable,true) of
         true->
@@ -85,11 +82,11 @@ enable()->
 heartbeat(Category,HeartMap)->
     case application:get_env(emon,enable,true) of
         true->
-            erlcat:log_heartbeat(Category,HeartMap),
+            erlcat:log_heartbeat(Category, HeartMap),
             ok;
         _ ->
             fail
     end.
 
 hook_heartbeat(Module,Fun,Arity)->
-    hooks:reg(?HOOK_EVENT_HEARTBEAT,Module,Fun,Arity).
+    hooks:reg(?HOOK_EVENT_HEARTBEAT, Module, Fun, Arity).
