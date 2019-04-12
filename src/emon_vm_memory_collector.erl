@@ -12,7 +12,7 @@
 -import(proplists, [get_value/2]).
 
 %% API
--export([init/0, collect_vm_memory_info/0]).
+-export([init/0, collect_vm_memory_info/0, format_to_string/1]).
 
 init() ->
   reg_heart_hook(),
@@ -29,13 +29,26 @@ collect_vm_memory_info() ->
         case memory_info_format({Item, Data}) of
           skip-> Acc;
           {Key, Value} ->
-            Acc#{Key => Value}
+            Acc#{Key => format_to_string(Value)}
         end
       end, #{}, metrics()),
 
-  io:format("~p~n.", [MemoryInfo]),
-  %%emon:heartbeat("VM Memory Info", MemoryInfo),
+  %%io:format("~p~n.", [MemoryInfo]),
+  emon:heartbeat("VM Memory Info", MemoryInfo),
   ok.
+
+format_to_string(Value) ->
+  case is_integer(Value) of
+    true ->
+      integer_to_list(Value);
+    false ->
+      case Value == undefined of
+        true ->
+          "0";
+        false ->
+          Value
+      end
+  end.
 
 metrics() ->
   [

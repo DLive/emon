@@ -15,7 +15,12 @@
 %%====================================================================
 
 start(_StartType, _StartArgs) ->
-    emon_sup:start_link().
+    Ret = emon_sup:start_link(),
+    %% Init Collectors
+    emon_vm_memory_collector:init(),
+    emon_vm_statistics_collector:init(),
+    emon_vm_system_collector:init(),
+    Ret.
 
 %%--------------------------------------------------------------------
 stop(_State) ->

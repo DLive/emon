@@ -27,10 +27,11 @@ collect_vm_system_info() ->
           case erlang:system_info(Item) of
             unknown -> Acc;
             Value ->
-              case system_info_format({Item, Value}) of
+              Result = format_to_string(Value),
+              case system_info_format({Item, Result}) of
                 skip-> Acc;
-                {Key, Value} ->
-                  Acc#{Key => Value}
+                {Key, Result} ->
+                  Acc#{Key => Result}
               end
           end
         catch
@@ -38,9 +39,22 @@ collect_vm_system_info() ->
         end
       end, #{}, metrics()),
 
-  io:format("~p~n.", [SystemInfo]),
-  %%emon:heartbeat("VM System Info", SystemInfo),
+  %%io:format("~p~n.", [SystemInfo]),
+  emon:heartbeat("VM System Info", SystemInfo),
   ok.
+
+format_to_string(Value) ->
+  case is_integer(Value) of
+    true ->
+      integer_to_list(Value);
+    false ->
+      case Value == undefined of
+        true ->
+          "0";
+        false ->
+          Value
+      end
+  end.
 
 metrics() ->
   [
