@@ -26,13 +26,26 @@ collect_vm_statistics_info() ->
         case statistics_info_format(Item) of
           skip-> Acc;
           {Key, Value} ->
-            Acc#{Key => Value}
+            Acc#{Key => format_to_string(Value)}
         end
       end, #{}, metrics()),
 
-  io:format("~p~n.", [StatisticsInfo]),
-  %%emon:heartbeat("VM Statistics Info", StatisticsInfo),
+  %%io:format("~p~n.", [StatisticsInfo]),
+  emon:heartbeat("VM Statistics Info", StatisticsInfo),
   ok.
+
+format_to_string(Value) ->
+  case is_integer(Value) of
+    true ->
+      integer_to_list(Value);
+    false ->
+      case Value == undefined of
+        true ->
+          "0";
+        false ->
+          Value
+      end
+  end.
 
 metrics() ->
   {{input, Input}, {output, Output}} = erlang:statistics(io),
