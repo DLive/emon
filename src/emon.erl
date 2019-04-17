@@ -11,7 +11,7 @@ init(Appkey)->
         true->
             Encode = application:get_env(emon,erlcat_encode,0),
             Debug = application:get_env(emon,erlcat_debug,0),
-            erlcat:init_cat(Appkey,#cat_config{enable_debugLog = Debug,enable_heartbeat = 1,encoder_type = Encode}),
+            erlcat:init_cat(Appkey,#cat_config{enable_debugLog = Debug,enable_heartbeat = 0,encoder_type = Encode}),
             ok;
         _ ->
             fail
