@@ -29,7 +29,7 @@ destroy()->
 event(Type, Name, Status, Data)->
     case enable() of
         true->
-            erlcat:log_event(Type,Name,Status,Data),
+            erlcat:log_event(emon_erlcat:get_context(),Type,Name,Status,Data),
             ok;
         _ ->
             fail
@@ -38,7 +38,7 @@ event(Type, Name, Status, Data)->
 error(Message, ErrStr) ->
     case enable() of
         true->
-            erlcat:log_error(Message,ErrStr),
+            erlcat:log_error(emon_erlcat:get_context(),Message,ErrStr),
             ok;
         _ ->
             fail
@@ -47,7 +47,7 @@ error(Message, ErrStr) ->
 metric_count(Name, Count) ->
     case enable() of
         true->
-            erlcat:log_metric_for_count(Name,Count),
+            erlcat:log_metric_for_count(emon_erlcat:get_context(),Name,Count),
             ok;
         _ ->
             fail
@@ -56,7 +56,7 @@ metric_count(Name, Count) ->
 metric_duration(Name, Count) ->
     case enable() of
         true->
-            erlcat:log_metric_for_duration(Name,Count),
+            erlcat:log_metric_for_duration(emon_erlcat:get_context(),Name,Count),
             ok;
         _ ->
             fail
@@ -65,7 +65,7 @@ metric_duration(Name, Count) ->
 metric_sum(Name, Count)->
     case enable() of
         true->
-            erlcat:log_metric_for_sum(Name,Count),
+            erlcat:log_metric_for_sum(emon_erlcat:get_context(),Name,Count),
             ok;
         _ ->
             fail
@@ -82,7 +82,7 @@ enable()->
 heartbeat(Category,HeartMap)->
     case application:get_env(emon,enable,true) of
         true->
-            erlcat:log_heartbeat(Category, HeartMap),
+            erlcat:log_heartbeat(emon_erlcat:get_context(),Category, HeartMap),
             ok;
         _ ->
             fail
