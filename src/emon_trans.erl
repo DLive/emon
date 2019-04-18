@@ -44,7 +44,8 @@ remote_call_client()->
     emon_erlcat:reset_msgtree_info(MessageThreeInfo),
     MessageThreeInfo.
 remote_call_server({RootId,ParentId,ChildId}) ->
-    erlcat:log_remote_call_server(emon_erlcat:get_context(),RootId,ParentId,ChildId),
+    MessageThreeInfo = erlcat:log_remote_call_server(emon_erlcat:get_context(),RootId,ParentId,ChildId),
+    emon_erlcat:reset_msgtree_info(MessageThreeInfo),
     ok;
 remote_call_server(_) ->
     ok.

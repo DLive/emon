@@ -27,7 +27,7 @@ remote_call_test()->
     spawn(node(),emon_trans_tests,init,[p2]),
     spawn(node(),emon_trans_tests,init,[p3]),
     erlang:send(Pid,{request1}),
-    timer:sleep(5000),
+    timer:sleep(2000),
     ok.
 
 init(Name)->
@@ -39,25 +39,26 @@ loop()->
         {request1} ->
             emon_trans:remote_call_client(),
             T1 = emon_trans:new("EMON_MSG.unit", "send1"),
+
+            io:format(user,"ttttttt1~n",[]),
+            erlang:send(whereis(p2),{request2,emon_trans:get_msgtree_info()}),
             sleep1(),
             emon_trans:complete(T1),
-            io:format(user,"ttttttt1~n",[]),
-
-            erlang:send(whereis(p2),{request2,emon_trans:get_msgtree_info()}),
             ok;
         {request2,Context}->
             emon_trans:remote_call_server(Context),
             T2 = emon_trans:new( "EMON_MSG.unit", "send2"),
+
+            io:format(user,"ttttttt2 ~p~n",[Context]),
+            erlang:send(whereis(p3),{request3,emon_trans:get_msgtree_info()}),
             sleep1(),
             emon_trans:complete(T2),
-            io:format(user,"ttttttt2~n",[]),
-            erlang:send(whereis(p3),{request3,emon_trans:get_msgtree_info()}),
             ok;
         {request3,Context}->
             emon_trans:remote_call_server(Context),
             T3 = emon_trans:new( "EMON_MSG.unit", "send3"),
             sleep1(),
-            io:format(user,"ttttttt3~n",[]),
+            io:format(user,"ttttttt3 ~p~n",[Context]),
             emon_trans:complete(T3),
             ok;
         Unkonw->
