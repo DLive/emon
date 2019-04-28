@@ -24,7 +24,7 @@
     code_change/3]).
 
 -define(SERVER, ?MODULE).
--define(HEART_TIME,40000).
+-define(HEART_TIME,15000).
 -record(state, {}).
 
 %%%===================================================================
