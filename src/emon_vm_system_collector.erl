@@ -40,8 +40,7 @@ collect_vm_system_info() ->
       end, #{}, metrics()),
 
   %%io:format("~p~n.", [SystemInfo]),
-  emon:heartbeat("VM System Info", SystemInfo),
-  ok.
+  {"VM System Info", SystemInfo}.
 
 format_to_string(Value) ->
   case is_integer(Value) of

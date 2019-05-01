@@ -31,8 +31,7 @@ collect_vm_statistics_info() ->
       end, #{}, metrics()),
 
   %%io:format("~p~n.", [StatisticsInfo]),
-  emon:heartbeat("VM Statistics Info", StatisticsInfo),
-  ok.
+  {"VM Statistics Info", StatisticsInfo}.
 
 format_to_string(Value) ->
   case is_integer(Value) of

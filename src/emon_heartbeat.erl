@@ -13,7 +13,7 @@
 
 -include("emon.hrl").
 %% API
--export([start_link/0]).
+-export([start_link/0,eval_hook_result/0]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -24,8 +24,8 @@
     code_change/3]).
 
 -define(SERVER, ?MODULE).
--define(HEART_TIME,15000).
--record(state, {}).
+-define(HEART_TIME,50000).
+-record(state, {pre_minute=undefined}).
 
 %%%===================================================================
 %%% API
@@ -112,10 +112,24 @@ handle_cast(_Request, State) ->
     {noreply, NewState :: #state{}} |
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
-handle_info({timeout, _, {heart}},State) ->
-    hooks:run(?HOOK_EVENT_HEARTBEAT,[]),
+handle_info({timeout, _, {heart}},#state{pre_minute = PreMinute} = State) ->
+    {_, {_, CurMinute,_}} = calendar:local_time(),
+    UpdateMinute =
+        if
+            PreMinute == CurMinute ->
+                PreMinute;
+            true ->
+                HookResult = eval_hook_result(),
+                case maps:size(HookResult) of
+                    Size when Size>0 ->
+                        emon:heartbeat(HookResult);
+                    _ ->
+                        ok
+                end,
+                CurMinute
+        end,
     start_next_heart(),
-    {noreply, State};
+    {noreply, State#state{pre_minute = UpdateMinute}};
 
 handle_info(_Info, State) ->
     {noreply, State}.
@@ -153,3 +167,13 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+eval_hook_result()->
+
+    Results = hooks:all(?HOOK_EVENT_HEARTBEAT,[]),
+    ResultMap =
+        lists:foldl(
+            fun({Name,Values},Acc)->
+                maps:put(Name,Values,Acc)
+            end,#{},Results),
+    ResultMap.

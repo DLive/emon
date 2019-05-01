@@ -34,8 +34,7 @@ collect_vm_memory_info() ->
       end, #{}, metrics()),
 
   %%io:format("~p~n.", [MemoryInfo]),
-  emon:heartbeat("VM Memory Info", MemoryInfo),
-  ok.
+  {"VM Memory Info", MemoryInfo}.
 
 format_to_string(Value) ->
   case is_integer(Value) of

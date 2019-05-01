@@ -4,7 +4,7 @@
 -include("emon.hrl").
 -export([init/1,destroy/0,enable/0,hook_heartbeat/3]).
 -export([event/4, error/2, metric_count/2, metric_duration/2, metric_sum/2]).
--export([heartbeat/2]).
+-export([heartbeat/1]).
 
 init(Appkey)->
     case enable() of
@@ -79,10 +79,10 @@ enable()->
             false
     end.
 
-heartbeat(Category,HeartMap)->
+heartbeat(HeartMap)->
     case application:get_env(emon,enable,true) of
         true->
-            erlcat:log_heartbeat(Category, HeartMap),
+            erlcat:log_heartbeat(HeartMap),
             ok;
         _ ->
             fail
